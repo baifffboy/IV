@@ -1,0 +1,74 @@
+@model EcoCollectionService.Models.CollectionStatusViewModel
+
+@{
+    ViewData["Title"] = $"Статус сбора - {Model.Event.Title}";
+}
+
+<div class="container mt-4">
+    <h2>Статус сбора на мероприятии: @Model.Event.Title</h2>
+    <p class="text-muted">@Model.Event.Location - @Model.Event.EventDateTime.ToString("dd.MM.yyyy HH:mm")</p>
+    
+    <div class="progress-container mt-5">
+        <h4>Бумага</h4>
+        <div class="progress">
+            <div class="progress-bar bg-success" role="progressbar" style="width: @Model.PaperProgress%" 
+                 aria-valuenow="@Model.PaperProgress" aria-valuemin="0" aria-valuemax="100">
+                @Model.PaperProgress%
+            </div>
+        </div>
+    </div>
+    
+    <div class="progress-container mt-4">
+        <h4>Стекло</h4>
+        <div class="progress">
+            <div class="progress-bar bg-info" role="progressbar" style="width: @Model.GlassProgress%" 
+                 aria-valuenow="@Model.GlassProgress" aria-valuemin="0" aria-valuemax="100">
+                @Model.GlassProgress%
+            </div>
+        </div>
+    </div>
+    
+    <div class="progress-container mt-4">
+        <h4>Пластик</h4>
+        <div class="progress">
+            <div class="progress-bar bg-warning" role="progressbar" style="width: @Model.PlasticProgress%" 
+                 aria-valuenow="@Model.PlasticProgress" aria-valuemin="0" aria-valuemax="100">
+                @Model.PlasticProgress%
+            </div>
+        </div>
+    </div>
+
+    <div class="air-quality-container mt-5">
+    <h4>Качество воздуха</h4>
+    <div class="d-flex justify-content-between mb-2">
+        <small>Отличное</small>
+        <small>@Model.AirQuality%</small>
+        <small>Опасное</small>
+    </div>
+    <div class="progress" style="height: 30px;">
+        @{
+            var airQualityClass = Model.AirQuality < 30 ? "bg-success" : 
+                                Model.AirQuality < 35 ? "bg-warning" : "bg-danger";
+        }
+        <div class="progress-bar @airQualityClass progress-bar-striped progress-bar-animated" 
+             role="progressbar" style="width: @Model.AirQuality%" 
+             aria-valuenow="@Model.AirQuality" aria-valuemin="0" aria-valuemax="100">
+            @Model.AirQuality%
+        </div>
+    </div>
+    <p class="text-muted mt-2">Последнее обновление: @Model.AirQualityLastUpdated.ToString("HH:mm:ss")</p>
+    </div>
+
+<!-- Добавим автоматическое обновление каждые 5 минут -->
+    @section Scripts {
+    <script>
+        setTimeout(function(){
+            window.location.reload();
+        }, 300000); // 300000 мс = 5 минут
+    </script>
+    }
+    
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-primary">Вернуться к списку мероприятий</a>
+    </div>
+</div>

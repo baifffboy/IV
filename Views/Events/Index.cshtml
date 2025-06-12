@@ -1,0 +1,96 @@
+﻿@model IEnumerable<EcoCollectionService.Models.Event>
+
+    @{
+    ViewData["Title"] = "Экологические мероприятия";
+    }
+
+    <h1>@ViewData["Title"]</h1>
+
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Создать новое мероприятие</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Описание</th>
+                <th>Дата и время</th>
+                <th>Место</th>
+                <th>Участников</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model) {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>@Html.DisplayFor(modelItem => item.EventDateTime)</td>
+                <td>@Html.DisplayFor(modelItem => item.Location)</td>
+                <td>@(item.Participants?.Count ?? 0) / @(item.MaxParticipants?.ToString() ?? "∞")</td>
+                <td>
+                    @foreach (var sensor in item.Sensors)
+                {
+                    <div>@sensor.SensorType: @sensor.CurrentValue</div>
+                }
+                </td>
+                <td>
+                    <a asp-action="Register" asp-route-id="@item.Id" class="btn btn-success">
+                        Зарегистрироваться
+                    </a>
+                </td>
+                <td>
+                    @if (item.Status == "Началось")
+        {
+                    <span class="badge bg-success">@item.Status</span>
+                    <div class="sensor-data">
+                        @foreach (var sensor in item.Sensors)
+                {
+                        <div>@sensor.SensorType: @sensor.CurrentValue</div>
+                }
+                    </div>
+        }
+        else
+        {
+                    <span class="badge bg-warning text-dark">@item.Status</span>
+                    <div>До начала: @((item.EventDateTime - DateTime.UtcNow.AddHours(3)).ToString(@"hh\:mm"))</div>
+        }
+                </td>
+                <td>
+                    <a asp-action="CollectionStatus" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                        Статус сбора
+                    </a>
+                </td>
+
+            </tr>
+
+}
+        </tbody>
+    </table>
+    @section Scripts {
+        <script>
+        // Автоматическое обновление каждую минуту
+        setTimeout(function(){
+            location.reload();
+        }, 60000);
+
+        // Или более продвинутый вариант с AJAX:
+        /*
+        function updateEventsStatus() {
+            fetch('/api/events/status')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(event => {
+                        const element = document.getElementById(`event-status-${event.id}`);
+                        if (element) {
+                            element.innerHTML = event.status === "Началось"
+                                ? '<span class="badge bg-success">Началось</span>'
+                                : '<span class="badge bg-warning text-dark">Ожидается</span>';
+                        }
+                    });
+                });
+        }
+        setInterval(updateEventsStatus, 60000);
+        */
+        </script>
+    }
